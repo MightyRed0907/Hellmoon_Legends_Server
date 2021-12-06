@@ -1,0 +1,26 @@
+{
+	 "clientPrefab":"Ice",
+     "moveSpeed":3,
+	 "health":15,
+	 "collision":1,
+	 "heroType":1,
+	 "experience":8,
+	 "alias":"Ice Warrior",
+	 "vision":13,
+	 "skills":
+	 [
+		{
+			"clientPrefab":"Melee",
+			"moveSpeed":5,
+			"collision":3,
+			"effect":3,
+			"cooldown":1,
+			"casttime":0.2,
+			"life":0.5,
+			"hitAndDestroy":true,
+			"hitContinous":false,
+			"skillType":0,
+			"botsDecideChance":20
+		}
+	 ]
+}
