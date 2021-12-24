@@ -56,7 +56,7 @@ public class DataReader
             int size = int.Parse (Path.GetFileNameWithoutExtension(image[0]).Split ('@') [1]);
 
             byte[] getBytes = File.ReadAllBytes(image[0]);
-            m.data = new Texture2D(size, size);
+            m.data = new Texture2D(size, size, TextureFormat.RGB24, false, false);
             m.data.LoadImage(getBytes);
 
             m.mapSize = size;
