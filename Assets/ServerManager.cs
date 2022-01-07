@@ -15,6 +15,7 @@ public class ServerManager : MonoBehaviour
     public static Callipso.ServerSettings setting;
     public static List<Callipso.Hero> playerHeroes = new List<Callipso.Hero>(); // player heroes list.
 	public static List<Callipso.Hero> creatureHeroes = new List<Callipso.Hero>(); // creature heroes list
+    public static List<Callipso.Hero> towerHeroes = new List<Callipso.Hero>(); // tower heroes list
     public static List<Callipso.GameSession> sessions = new List<Callipso.GameSession>(); // created game sessions
 
     // Use this for initialization
@@ -46,6 +47,8 @@ public class ServerManager : MonoBehaviour
         {
             if (sessions[i].isStarted && !sessions[i].killed)
             {
+                //InitializeMap(sessions[i]);
+
                 List<Map.CreatureSpawn> cSpawns = MapLoader.maps[sessions[i].map].creatureSpawns;
                 ushort lSpawns = (ushort)cSpawns.Count;
 
@@ -110,9 +113,16 @@ public class ServerManager : MonoBehaviour
                     {
                         sessions[i].time = Time.time + MapLoader.maps[sessions[i].map].lobbyTime;
                         sessions[i].canAddBots = true;
+
                     } else
-                    
-					sessions[i].Start();
+                    {
+                        // AddTower(sessions[i]);
+                        for (int j = 0; j < 8; j++)
+                        {
+                            AISpawner.SpawnTower(ServerManager.towerHeroes[Random.Range(0,ServerManager.towerHeroes.Count)].clientPrefab, sessions[i]);      
+                        }
+                        sessions[i].Start();
+                    }
                 }
             }
         }
@@ -139,9 +149,13 @@ public class ServerManager : MonoBehaviour
             Callipso.Hero _hero = JsonUtility.FromJson<Callipso.Hero>(content[i]);
             if (_hero.heroType == Callipso.HeroType.Creature)
                 creatureHeroes.Add(_hero);
-            else
+            else if (_hero.heroType == Callipso.HeroType.Player)
             {
                 playerHeroes.Add(_hero);
+            }
+            else
+            {
+                towerHeroes.Add(_hero);
             }
         }
     }
@@ -150,6 +164,7 @@ public class ServerManager : MonoBehaviour
     {
         HeroLoadFromFolder("Heroes");
         HeroLoadFromFolder("Creatures");
+        HeroLoadFromFolder("Towers");
 
         heroInfo = new MObjects.HeroInfo();
         ushort c = (ushort) playerHeroes.Count;
@@ -196,7 +211,7 @@ public class ServerManager : MonoBehaviour
         Debug.Log("Client disconnected. " + netMsg.conn.connectionId);
 		Callipso.GameSession _s = sessions.Find(x => (x.agents.Find(e => e.user != null && e.user.connectionId == netMsg.conn.connectionId))); // currently in session
 
-        if (_s!=null)_s.KickPlayer(netMsg.conn.connectionId); // remove the connection from the session
+        if (_s!=null) _s.KickPlayer(netMsg.conn.connectionId); // remove the connection from the session
     }
 
     public static ushort createdSessions;
@@ -243,7 +258,7 @@ public class ServerManager : MonoBehaviour
             _gameSession.teamsize = MapLoader.maps[_gameSession.map].teamsize;
 
             sessions.Add(_gameSession);
-		}
+        }
 		else Debug.Log("Joining game session");
 
 		GameObject _player = new GameObject("Player");
@@ -270,7 +285,8 @@ public class ServerManager : MonoBehaviour
 
 		_ma.LoadHero(clientPrefab, isHero); // for bots
 
-		if (_ma._hero.heroType == Callipso.HeroType.Player && _gameSession.time < Time.time + 10) 
+		if ((_ma._hero.heroType == Callipso.HeroType.Player || _ma._hero.heroType == Callipso.HeroType.Tower) 
+            && _gameSession.time < Time.time + 10) 
 		{ // New player joined
 			_gameSession.time = Time.time + Mathf.Clamp (10, 0, MapLoader.maps [_gameSession.map].lobbyTime);
 		}
@@ -280,7 +296,7 @@ public class ServerManager : MonoBehaviour
 
         return _ma;
 	}
-    
+
     public void MoveRequest(NetworkMessage netMsg)
     {
 		Callipso.GameSession _currentSession = sessions.Find(x => x.agents.Find(e => e.user != null && e.user.connectionId == netMsg.conn.connectionId)); // currently in session

@@ -48,7 +48,8 @@ namespace Callipso // Welcome to Callipso!
 	public enum HeroType
 	{
 		Player,
-		Creature
+		Creature,
+        Tower
 	}
 
     [System.Serializable]
@@ -72,7 +73,8 @@ namespace Callipso // Welcome to Callipso!
     [System.Serializable]
     public class GameSession // running game session
     {
-        public ushort[] spawnPointRequester;
+        public ushort[] heroSpawnPointRequester;
+        public ushort[] towerSpawnPointRequester;
 
         public ushort map;
         public ushort round = 1; // round id
@@ -235,10 +237,12 @@ namespace Callipso // Welcome to Callipso!
 			if (!isStarted)
             {
                 ushort tSize = MapLoader.maps[map].teamsize;
-                spawnPointRequester = new ushort[ (tSize == 0) ? 1 : tSize ]; 
-				CreateScoreData ();
-				UpdateRankings ();
+                heroSpawnPointRequester = new ushort[ (tSize == 0) ? 1 : tSize ];
+                towerSpawnPointRequester = new ushort[(tSize == 0) ? 1 : tSize];
 
+                CreateScoreData();
+				UpdateRankings ();
+               
                 isStarted = true;
             }
 
@@ -248,7 +252,7 @@ namespace Callipso // Welcome to Callipso!
             {
                 heroes[i].agentLevel.LevelInfo();
                 heroes[i].health = heroes[i].maxHealth;
-                heroes[i].transform.position = MapLoader.maps[map].Request_SpawnPoint (this, heroes[i].team);
+                heroes[i].transform.position = MapLoader.maps[map].Request_HeroSpawnPoint (this, heroes[i].team);
                 heroes[i].Stop(true);
                 heroes[i].SyncPosition();
                 heroes[i].agentBuff.buff.buffs.Clear(); // Clear all buffs.
@@ -270,6 +274,9 @@ namespace Callipso // Welcome to Callipso!
             {
                 creatures[i].GetComponent<AIAgent>().activeTarget = null;
             }
+
+
+            UpdateTowers();
 
             Update();
         }
@@ -325,6 +332,24 @@ namespace Callipso // Welcome to Callipso!
 			}
 		}
 
+        void UpdateTowers()
+        {
+            //Debug.LogWarning("Update Tower calling");
+
+            List<MobileAgent> towers = agents.FindAll(x => x.heroType == HeroType.Tower);
+            int c = towers.Count;
+            for (int i = 0; i < c; i++)
+            {
+                towers[i].agentLevel.LevelInfo();
+                towers[i].health = towers[i].maxHealth;
+                towers[i].transform.position = MapLoader.maps[map].Request_TowerSpawnPoint(this, towers[i].team);
+                towers[i].Stop(true);
+                towers[i].SyncPosition();
+                towers[i].agentBuff.buff.buffs.Clear(); // Clear all buffs.
+                towers[i].agentBuff.buff.buffs.AddRange(towers[i]._hero.defaultBuffs); // Re-add default buffs
+            }
+        }
+
         public void LastAim(int connectionId, Vector3 y, Vector3 agentPos)
         {
 			MobileAgent _ma = agents.Find(x => ((x.user != null) ? x.user.connectionId : x.customId) == connectionId);
@@ -357,10 +382,12 @@ namespace Callipso // Welcome to Callipso!
             {
                 SpamController.obj.SpamFor(_ma, 1); // client can send this per 0.05f seconds or the spammer will be increased
 
+                /*
                 if (MapLoader.isBlocked(map, _ma.transform.position, tPos, false))
                 {
                     tPos = MapLoader.latestPoint(map, _ma.transform.position, tPos);
                 }
+                */
 
                 _ma.targetPoint = tPos;
             }

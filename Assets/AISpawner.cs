@@ -37,4 +37,17 @@ public class AISpawner
 
         return created;
     }
+
+    public static MobileAgent SpawnTower(string clientPrefab, Callipso.GameSession session)
+    {
+        Callipso.Hero tower = ServerManager.towerHeroes.Find(x => x.clientPrefab == clientPrefab);
+        MobileAgent created = ServerManager.current.JoinGame(null, session, tower.alias, clientPrefab, true);
+        AIAgent ai = created.gameObject.AddComponent<AIAgent>();
+        ai.agent = created;
+        //ai.vision = tower.vision; // Bots always can see
+        ai.vision = 20;
+        created.user = null;
+
+        return created;
+    }
 }

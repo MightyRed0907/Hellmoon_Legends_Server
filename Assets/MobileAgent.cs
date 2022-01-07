@@ -209,7 +209,7 @@ public class MobileAgent : MonoBehaviour
 
     public Callipso.Hero _hero;
 
-	public void LoadHero(string _heroId, bool isHero = false)
+    public void LoadHero(string _heroId, bool isHero = false)
     {
         /*
          * SET TEAM
@@ -232,19 +232,26 @@ public class MobileAgent : MonoBehaviour
                 if (trg.Count == 0)
                 {
                     _heroId = ServerManager.playerHeroes[Random.Range(0, ServerManager.playerHeroes.Count)].clientPrefab;
-                } else
-                _heroId = trg[Random.Range(0, trg.Count)].clientPrefab;
+                }
+                else
+                    _heroId = trg[Random.Range(0, trg.Count)].clientPrefab;
             }
         }
-        
+
         maxHealth = 0;
         heroId = _heroId;
 
-		if (isHero)
-			_hero = ServerManager.playerHeroes.Find(x => x.clientPrefab == _heroId);
+        if (isHero)
+        {
+            _hero = ServerManager.playerHeroes.Find(x => x.clientPrefab == _heroId);
+
+            if (_hero == null)
+                _hero = ServerManager.towerHeroes.Find(x => x.clientPrefab == _heroId);
+        }
+            
         else
             _hero = ServerManager.creatureHeroes.Find(x => x.clientPrefab == _heroId);
-		
+
         moveSpeed = _hero.moveSpeed;
         skills = _hero.skills;
 
@@ -276,7 +283,84 @@ public class MobileAgent : MonoBehaviour
         }
 
         physik.session = session;
-		physik.radius = _hero.collision;
+        physik.radius = _hero.collision;
+        physik.team = team;
+
+        if (user != null)
+        {
+            // SEND SKILL INFO
+            MObjects.SkillInfo mObject = new MObjects.SkillInfo();
+            mObject.skills = skills;
+            NetworkServer.SendToClient(user.connectionId, MTypes.SkillInfo, mObject);
+        }
+    }
+
+    public void LoadTower()
+    {
+        /*
+         * SET TEAM
+         * */
+        FindTeam(true);
+        /*
+         * */
+        string _heroId = "Tower";
+
+        if (true)
+        { // AUTO TOWER SELECTION
+            if (session.teamsize == 0)
+            {
+                _heroId = ServerManager.towerHeroes[Random.Range(0, ServerManager.towerHeroes.Count)].clientPrefab;
+            }
+            else
+            {
+                List<MobileAgent> teamMates = session.agents.FindAll(x => x.team == team);
+                List<Callipso.Hero> trg = ServerManager.towerHeroes.FindAll(x => teamMates.Find(e => e.heroId == x.clientPrefab) == null);
+
+                if (trg.Count == 0)
+                {
+                    _heroId = ServerManager.towerHeroes[Random.Range(0, ServerManager.towerHeroes.Count)].clientPrefab;
+                }
+                else
+                    _heroId = trg[Random.Range(0, trg.Count)].clientPrefab;
+            }
+        }
+
+        maxHealth = 0;
+        heroId = _heroId;
+
+        _hero = ServerManager.towerHeroes.Find(x => x.clientPrefab == _heroId);
+        
+        moveSpeed = _hero.moveSpeed;
+        skills = _hero.skills;
+
+        cooldowns = new float[skills.Length];
+        heroType = _hero.heroType;
+
+        agentLevel.level = new Leveling.Level();
+        agentLevel.level.level = 1;
+        agentLevel.exp = 0;
+        agentLevel.requiredExp = 10;
+
+        /*
+         * DEFAULT BUFFS
+         * */
+
+        agentBuff.buff.buffs.Clear();
+        agentBuff.buff.buffs.AddRange(_hero.defaultBuffs);
+
+        /*
+         * */
+
+        gameObject.name = _heroId;
+
+        if (physik == null)
+        {
+            physik = gameObject.AddComponent<Physik>();
+            physik.agent = this;
+        }
+
+        physik.session = session;
+        physik.radius = _hero.collision;
         physik.team = team;
 
         if (user != null)

@@ -58,6 +58,12 @@ public class Map
         public Vector3[] spawnPoints;
     }
 
+    [System.Serializable]
+    public class TowerData
+    {
+        public Vector3[] spawnPoints;
+    }
+
     public Texture2D data;
 
     public ushort teamsize = 0; // how many teams in this map?, 0 means deathmatch
@@ -68,19 +74,35 @@ public class Map
     public ushort minPlayers = 2;
 
     public TeamData[] teamData;
+    public TowerData[] towerData;
 
-    public Vector3 Request_SpawnPoint(Callipso.GameSession session, ushort team)
+    public Vector3 Request_HeroSpawnPoint(Callipso.GameSession session, ushort team)
     {
         if (teamsize == 0) // 0 = deathmath
         {
             team = 0;
         }
 
-        session.spawnPointRequester[team]++;
+        session.heroSpawnPointRequester[team]++;
 
-        if (session.spawnPointRequester[team] >= teamData[team].spawnPoints.Length)
-            session.spawnPointRequester[team] = 0;
-        return teamData[team].spawnPoints [session.spawnPointRequester[team]];
+        if (session.heroSpawnPointRequester[team] >= teamData[team].spawnPoints.Length)
+            session.heroSpawnPointRequester[team] = 0;
+        return teamData[team].spawnPoints [session.heroSpawnPointRequester[team]];
+    }
+
+    public Vector3 Request_TowerSpawnPoint(Callipso.GameSession session, ushort team)
+    {
+        if (teamsize == 0) // 0 = deathmath
+        {
+            team = 0;
+        }
+
+        session.towerSpawnPointRequester[team]++;
+
+        if (session.towerSpawnPointRequester[team] >= towerData[team].spawnPoints.Length)
+            session.towerSpawnPointRequester[team] = 0;
+
+        return towerData[team].spawnPoints[session.towerSpawnPointRequester[team]];
     }
 }
 

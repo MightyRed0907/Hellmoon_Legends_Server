@@ -1,0 +1,35 @@
+{
+	 "clientPrefab":"Tower",
+     "moveSpeed":0,
+	 "health":500,
+	 "collision":5,
+	 "heroType":2,
+	 "vision":13,
+	 "skills":
+	 [
+	 	{
+			"clientPrefab":"Lightning",
+			"moveSpeed":14,
+			"collision":3,
+			"effect":20,
+			"effectType":0,
+			"cooldown":1,
+			"casttime":1,
+			"life":1,
+			"hitAndDestroy":true,
+			"hitContinous":false,
+			"skillType":0,
+			"activeAfter":0,
+			"botsDecideChance":100
+		}
+	 ],
+	 "levels":
+	 [
+		{
+			"level":2,
+			"Percent_effect":0,
+		    "Percent_cooldown":0,
+			"Percent_fastercast":0
+		}
+	 ]
+}
