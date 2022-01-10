@@ -1,11 +1,11 @@
 {
-	 "clientPrefab":"Ice",
+	 "clientPrefab":"Blue",
      "moveSpeed":3,
-	 "health":15,
+	 "health":30,
 	 "collision":1,
 	 "heroType":1,
 	 "experience":8,
-	 "alias":"Ice Warrior",
+	 "alias":"Blue Bot",
 	 "vision":13,
 	 "skills":
 	 [

@@ -83,9 +83,11 @@ public class AIAgent : MonoBehaviour
 
         List<MobileAgent> agents = agent.session.agents.FindAll(x => x != agent &&
             (agent.session.teamsize == 0 || x.team != agent.team) && !x.isDead &&
-            PhysikEngine.GetDistance(x.transform.position, transform.position) < vision &&
-            (agent.heroType == Callipso.HeroType.Player || agent.heroType == Callipso.HeroType.Tower ||
-            (agent.heroType == Callipso.HeroType.Creature && x.heroType == Callipso.HeroType.Player)));
+            PhysikEngine.GetDistance(x.transform.position, transform.position) < vision 
+            //&&
+            //(agent.heroType == Callipso.HeroType.Player || agent.heroType == Callipso.HeroType.Tower ||
+            //(agent.heroType == Callipso.HeroType.Creature && x.heroType == Callipso.HeroType.Player))
+            );
 
         if (agents.Count > 0)
         {
@@ -94,16 +96,16 @@ public class AIAgent : MonoBehaviour
             return;
         }
 
-        if (activeTarget == null && !agent.pointed && agent.heroType == Callipso.HeroType.Player)
-        {
-            List<MobileAgent> targetCreatures = agent.session.creatures.FindAll(x => x != null);
-            if (targetCreatures.Count > 0)
-            {
-                activeTarget = targetCreatures[Random.Range(0, targetCreatures.Count)].physik;
-                GetPath(activeTarget.transform.position);
-                return;
-            }
-        }
+        // if (activeTarget == null && !agent.pointed && agent.heroType == Callipso.HeroType.Player)
+        // {
+        //     List<MobileAgent> targetCreatures = agent.session.creatures.FindAll(x => x != null);
+        //     if (targetCreatures.Count > 0)
+        //     {
+        //         activeTarget = targetCreatures[Random.Range(0, targetCreatures.Count)].physik;
+        //         GetPath(activeTarget.transform.position);
+        //         return;
+        //     }
+        // }
 
         /*
          * NO TARGET FOUND, LET's PICK A RANDOM Target
@@ -112,9 +114,10 @@ public class AIAgent : MonoBehaviour
         if (agent._hero.heroType == Callipso.HeroType.Player && (targetPath == null || targetPath.Count == 0))
         {
             agents = agent.session.agents.FindAll(x =>
-                (agent.session.teamsize == 0 || x.team != agent.team) && !x.isDead &&
-                (agent.heroType == Callipso.HeroType.Player || 
-                    (agent.heroType == Callipso.HeroType.Creature && x.heroType == Callipso.HeroType.Player))
+                (agent.session.teamsize == 0 || x.team != agent.team) && !x.isDead 
+                //&&
+                //(agent.heroType == Callipso.HeroType.Player || 
+                //    (agent.heroType == Callipso.HeroType.Creature && x.heroType == Callipso.HeroType.Player))
             );
 
             if (agents.Count > 0)

@@ -38,6 +38,7 @@ public class Map
         public Vector3 spawnPoint;
         public float spawnTime;
         public ushort spawnCount;
+        public ushort teamId;
         public float spawnRange;
 
         public ProportionValue<ushort>[] clist;

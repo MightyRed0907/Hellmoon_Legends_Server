@@ -60,7 +60,7 @@ public class ServerManager : MonoBehaviour
 
                         if (sessions[i].creatures.FindAll (x=>x.spawner == a).Count < cSpawns [a].spawnCount)
                         {
-                            MobileAgent creature = AISpawner.SpawnCreature(cSpawns[a].GetSpawnObject(), sessions[i]);
+                            MobileAgent creature = AISpawner.SpawnCreature(cSpawns[a].GetSpawnObject(), sessions[i], cSpawns[a].teamId);
                             creature.spawner = a;
                             sessions[i].creatures.Add(creature);
 

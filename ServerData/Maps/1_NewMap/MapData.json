@@ -127,15 +127,30 @@
 	"creatureSpawns":
 	[
 		{
-			"spawnPoint": { "x":107, "y":0, "z":89},
+			"spawnPoint": { "x":40, "y":0, "z":30},
 			"spawnTime":2,
 			"spawnCount":8,
-			"spawnRange":100,
+			"spawnRange":5,
+			"teamId": 0,
 			"spawnObject":
 			[
 				{
-					"clientPrefab":"Ice",
-					"spawnRate":100
+					"clientPrefab":"Blue",
+					"spawnRate":10
+				}
+			]
+		},
+		{
+			"spawnPoint": { "x":140, "y":0, "z":130},
+			"spawnTime":2,
+			"spawnCount":8,
+			"spawnRange":5,
+			"teamId": 1,
+			"spawnObject":
+			[
+				{
+					"clientPrefab":"Green",
+					"spawnRate":10
 				}
 			]
 		}

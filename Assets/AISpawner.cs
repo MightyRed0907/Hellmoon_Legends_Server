@@ -26,10 +26,11 @@ public class AISpawner
         return created;
     }
 
-    public static MobileAgent SpawnCreature(string clientPrefab, Callipso.GameSession session)
+    public static MobileAgent SpawnCreature(string clientPrefab, Callipso.GameSession session, ushort teamId)
     {
         Callipso.Hero creature = ServerManager.creatureHeroes.Find(x => x.clientPrefab == clientPrefab);
         MobileAgent created = ServerManager.current.JoinGame(null, session, creature.alias, clientPrefab);
+        created.team = teamId;
         AIAgent ai = created.gameObject.AddComponent<AIAgent>();
         ai.agent = created;
         ai.vision = creature.vision; // Bots always can see
