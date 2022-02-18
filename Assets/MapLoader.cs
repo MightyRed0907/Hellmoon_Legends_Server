@@ -58,11 +58,35 @@ public class Map
     {
         public Vector3[] spawnPoints;
     }
+    
+    [System.Serializable]
+    public class BuildingInfo
+    {
+        public ushort buildingId;
+        public float x;
+        public float y;
+        public float z;
+        public bool isNexus;
+        public ushort team;
+
+        public Vector3 GetPosition()
+        {
+            return new Vector3(x, y, z);
+        }
+
+        public string GetBuildingPrefab()
+        {
+            if (isNexus)
+                return "Nexus";
+            else 
+                return "Tower";
+        }
+    }
 
     [System.Serializable]
-    public class TowerData
+    public class BuildingData
     {
-        public Vector3[] spawnPoints;
+        public BuildingInfo[] teamBuildings;
     }
 
     public Texture2D data;
@@ -75,7 +99,7 @@ public class Map
     public ushort minPlayers = 2;
 
     public TeamData[] teamData;
-    public TowerData[] towerData;
+    public BuildingData[] buildingData;
 
     public Vector3 Request_HeroSpawnPoint(Callipso.GameSession session, ushort team)
     {
@@ -100,10 +124,10 @@ public class Map
 
         session.towerSpawnPointRequester[team]++;
 
-        if (session.towerSpawnPointRequester[team] >= towerData[team].spawnPoints.Length)
+        if (session.towerSpawnPointRequester[team] >= buildingData[team].teamBuildings.Length)
             session.towerSpawnPointRequester[team] = 0;
 
-        return towerData[team].spawnPoints[session.towerSpawnPointRequester[team]];
+        return buildingData[team].teamBuildings[session.towerSpawnPointRequester[team]].GetPosition();
     }
 }
 

@@ -49,7 +49,7 @@ namespace Callipso // Welcome to Callipso!
 	{
 		Player,
 		Creature,
-        Tower
+        Building
 	}
 
     [System.Serializable]
@@ -86,6 +86,8 @@ namespace Callipso // Welcome to Callipso!
 
         public void RoundComplete()
         {
+            return;
+            
             MObjects.RoundComplete mObject = new MObjects.RoundComplete();
 
             ushort r = (ushort) users.Count;
@@ -226,7 +228,7 @@ namespace Callipso // Welcome to Callipso!
             }
         }
 
-        public void Start()
+        public void Start(bool initial = false)
         { // session started
             time = Time.time + MapLoader.maps[map].roundTime;
 
@@ -257,6 +259,9 @@ namespace Callipso // Welcome to Callipso!
                 heroes[i].SyncPosition();
                 heroes[i].agentBuff.buff.buffs.Clear(); // Clear all buffs.
                 heroes[i].agentBuff.buff.buffs.AddRange(heroes[i]._hero.defaultBuffs); // Re-add default buffs
+                
+                if(heroes[i].GetComponent<AIAgent>() != null) 
+                    heroes[i].GetComponent<AIAgent>().activeTarget = null;
             }
 
             c = createdSkills.Count;
@@ -275,8 +280,7 @@ namespace Callipso // Welcome to Callipso!
                 creatures[i].GetComponent<AIAgent>().activeTarget = null;
             }
 
-
-            UpdateTowers();
+            UpdateTowers(initial);
 
             Update();
         }
@@ -332,21 +336,30 @@ namespace Callipso // Welcome to Callipso!
 			}
 		}
 
-        void UpdateTowers()
+        void UpdateTowers(bool initial = false)
         {
             //Debug.LogWarning("Update Tower calling");
 
-            List<MobileAgent> towers = agents.FindAll(x => x.heroType == HeroType.Tower);
-            int c = towers.Count;
+            List<MobileAgent> buildings = agents.FindAll(x => x.heroType == HeroType.Building);
+            int c = buildings.Count;
             for (int i = 0; i < c; i++)
             {
-                towers[i].agentLevel.LevelInfo();
-                towers[i].health = towers[i].maxHealth;
-                towers[i].transform.position = MapLoader.maps[map].Request_TowerSpawnPoint(this, towers[i].team);
-                towers[i].Stop(true);
-                towers[i].SyncPosition();
-                towers[i].agentBuff.buff.buffs.Clear(); // Clear all buffs.
-                towers[i].agentBuff.buff.buffs.AddRange(towers[i]._hero.defaultBuffs); // Re-add default buffs
+                buildings[i].agentLevel.LevelInfo();
+                
+                if (initial)
+                    buildings[i].health = buildings[i].maxHealth;
+                else
+                    buildings[i].health = buildings[i].health;
+
+                if (buildings[i].buildingInfo != null)
+                    buildings[i].transform.position = buildings[i].buildingInfo.GetPosition();
+                //else
+                //    buildings[i].transform.position = MapLoader.maps[map].Request_TowerSpawnPoint(this, buildings[i].team);
+
+                buildings[i].Stop(true);
+                buildings[i].SyncPosition();
+                buildings[i].agentBuff.buff.buffs.Clear(); // Clear all buffs.
+                buildings[i].agentBuff.buff.buffs.AddRange(buildings[i]._hero.defaultBuffs); // Re-add default buffs
             }
         }
 

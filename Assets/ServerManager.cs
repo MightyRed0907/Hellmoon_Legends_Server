@@ -15,7 +15,7 @@ public class ServerManager : MonoBehaviour
     public static Callipso.ServerSettings setting;
     public static List<Callipso.Hero> playerHeroes = new List<Callipso.Hero>(); // player heroes list.
 	public static List<Callipso.Hero> creatureHeroes = new List<Callipso.Hero>(); // creature heroes list
-    public static List<Callipso.Hero> towerHeroes = new List<Callipso.Hero>(); // tower heroes list
+    public static List<Callipso.Hero> buildingHeroes = new List<Callipso.Hero>(); // tower heroes list
     public static List<Callipso.GameSession> sessions = new List<Callipso.GameSession>(); // created game sessions
 
     // Use this for initialization
@@ -86,6 +86,15 @@ public class ServerManager : MonoBehaviour
                                 creature.transform.position = cSpawns[a].spawnPoint;
                         }
                     }
+
+                    List<MobileAgent> nexusAgents = sessions[i].agents.FindAll(x => x.buildingInfo != null && x.buildingInfo.isNexus == true);
+
+                    if (nexusAgents != null & nexusAgents.Find(x => x.health <= 0) != null)
+                    {
+                        // Game is over
+                        sessions[i].round = MapLoader.maps[sessions[i].map].roundCount;
+                        sessions[i].time = Time.time - 1;
+                    }
                 }
             }
 
@@ -102,8 +111,8 @@ public class ServerManager : MonoBehaviour
 
                     if (sessions[i].round > MapLoader.maps[sessions[i].map].roundCount)
                     {
-                        // Game is over
-                        sessions[i].Kill( !sessions [i].killed );
+                        // game is over
+                        sessions[i].Kill(!sessions[i].killed);
                     }
                     else sessions[i].Start();
                 }
@@ -116,12 +125,8 @@ public class ServerManager : MonoBehaviour
 
                     } else
                     {
-                        // AddTower(sessions[i]);
-                        for (int j = 0; j < 8; j++)
-                        {
-                            AISpawner.SpawnTower(ServerManager.towerHeroes[Random.Range(0,ServerManager.towerHeroes.Count)].clientPrefab, sessions[i]);      
-                        }
-                        sessions[i].Start();
+                        SpawnLevelBuildings(sessions[i]);
+                        sessions[i].Start(true);
                     }
                 }
             }
@@ -153,9 +158,9 @@ public class ServerManager : MonoBehaviour
             {
                 playerHeroes.Add(_hero);
             }
-            else
+            else if (_hero.heroType == Callipso.HeroType.Building)
             {
-                towerHeroes.Add(_hero);
+                buildingHeroes.Add(_hero);
             }
         }
     }
@@ -238,7 +243,7 @@ public class ServerManager : MonoBehaviour
 		JoinGame (netMsg.conn, _gameSession, mObject.alias, clientPrefab, true, mObject.mapId);
     }
 
-	public MobileAgent JoinGame (NetworkConnection conn, Callipso.GameSession _gameSession, string alias, string clientPrefab = null, bool isHero = false, ushort mapId = 0)
+	public MobileAgent JoinGame (NetworkConnection conn, Callipso.GameSession _gameSession, string alias, string clientPrefab = null, bool isHero = false, ushort mapId = 0, Map.BuildingInfo buildingInfo = null)
 	{
         if (conn != null)
             SendHeroInfo(conn); // Send hero list 
@@ -283,9 +288,14 @@ public class ServerManager : MonoBehaviour
 
 		_gameSession.agents.Add(_ma);
 
+        // For building
+        if (buildingInfo != null)
+            _ma.buildingInfo = buildingInfo;
+
 		_ma.LoadHero(clientPrefab, isHero); // for bots
 
-		if ((_ma._hero.heroType == Callipso.HeroType.Player || _ma._hero.heroType == Callipso.HeroType.Tower) 
+
+		if ((_ma._hero.heroType == Callipso.HeroType.Player || _ma._hero.heroType == Callipso.HeroType.Building) 
             && _gameSession.time < Time.time + 10) 
 		{ // New player joined
 			_gameSession.time = Time.time + Mathf.Clamp (10, 0, MapLoader.maps [_gameSession.map].lobbyTime);
@@ -296,6 +306,19 @@ public class ServerManager : MonoBehaviour
 
         return _ma;
 	}
+
+    public void SpawnLevelBuildings(Callipso.GameSession session )
+    {
+        // AddTower(sessions[i]);
+
+        foreach (var teamBuildingData in MapLoader.maps[session.map].buildingData)
+        {
+            foreach (var building in teamBuildingData.teamBuildings)
+            {
+                AISpawner.SpawnBuilding(building, session);
+            }
+        }
+    }
 
     public void MoveRequest(NetworkMessage netMsg)
     {

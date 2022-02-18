@@ -13,11 +13,7 @@ public class MobileAgent : MonoBehaviour
     ushort _spammer;
     public ushort spammer
     {
-        get
-        {
-            return _spammer;
-        }
-
+        get { return _spammer; }
         set
         {
             _spammer = value;
@@ -46,11 +42,7 @@ public class MobileAgent : MonoBehaviour
 
     public int health
     {
-        get
-        {
-            return _health;
-        }
-
+        get { return _health; }
         set
         {
             value = Mathf.Clamp(value, 0, maxHealth);
@@ -209,6 +201,8 @@ public class MobileAgent : MonoBehaviour
 
     public Callipso.Hero _hero;
 
+    public Map.BuildingInfo buildingInfo;
+
     public void LoadHero(string _heroId, bool isHero = false)
     {
         /*
@@ -246,7 +240,7 @@ public class MobileAgent : MonoBehaviour
             _hero = ServerManager.playerHeroes.Find(x => x.clientPrefab == _heroId);
 
             if (_hero == null)
-                _hero = ServerManager.towerHeroes.Find(x => x.clientPrefab == _heroId);
+                _hero = ServerManager.buildingHeroes.Find(x => x.clientPrefab == _heroId);
         }
             
         else
@@ -303,22 +297,22 @@ public class MobileAgent : MonoBehaviour
         FindTeam(true);
         /*
          * */
-        string _heroId = "Tower";
+        string _heroId = "Building";
 
         if (true)
         { // AUTO TOWER SELECTION
             if (session.teamsize == 0)
             {
-                _heroId = ServerManager.towerHeroes[Random.Range(0, ServerManager.towerHeroes.Count)].clientPrefab;
+                _heroId = ServerManager.buildingHeroes[Random.Range(0, ServerManager.buildingHeroes.Count)].clientPrefab;
             }
             else
             {
                 List<MobileAgent> teamMates = session.agents.FindAll(x => x.team == team);
-                List<Callipso.Hero> trg = ServerManager.towerHeroes.FindAll(x => teamMates.Find(e => e.heroId == x.clientPrefab) == null);
+                List<Callipso.Hero> trg = ServerManager.buildingHeroes.FindAll(x => teamMates.Find(e => e.heroId == x.clientPrefab) == null);
 
                 if (trg.Count == 0)
                 {
-                    _heroId = ServerManager.towerHeroes[Random.Range(0, ServerManager.towerHeroes.Count)].clientPrefab;
+                    _heroId = ServerManager.buildingHeroes[Random.Range(0, ServerManager.buildingHeroes.Count)].clientPrefab;
                 }
                 else
                     _heroId = trg[Random.Range(0, trg.Count)].clientPrefab;
@@ -328,7 +322,7 @@ public class MobileAgent : MonoBehaviour
         maxHealth = 0;
         heroId = _heroId;
 
-        _hero = ServerManager.towerHeroes.Find(x => x.clientPrefab == _heroId);
+        _hero = ServerManager.buildingHeroes.Find(x => x.clientPrefab == _heroId);
         
         moveSpeed = _hero.moveSpeed;
         skills = _hero.skills;
@@ -383,6 +377,12 @@ public class MobileAgent : MonoBehaviour
             return;
         }
 
+        if (buildingInfo != null)
+        {
+            team = buildingInfo.team;
+            return;
+        }
+
         ushort[] teamSizes = new ushort[session.teamsize];
         for (ushort i = 0; i < session.teamsize; i++)
         {
@@ -429,7 +429,8 @@ public class MobileAgent : MonoBehaviour
                     if (NetworkServer.connections.Contains(session.users[i]))
                     {
                         // send the mobject
-                        NetworkServer.SendToClient(session.users[i].connectionId, MTypes.AgentMove, mObject);
+                        try { NetworkServer.SendToClient(session.users[i].connectionId, MTypes.AgentMove, mObject); }
+                        catch { }
                     }
                 }
             }
@@ -499,7 +500,8 @@ public class MobileAgent : MonoBehaviour
             {
 				mObject.isController = (session.users[i].connectionId == mObject.id);
                 // send the mobject
-				NetworkServer.SendToClient(session.users[i].connectionId, MTypes.AgentInfo, mObject);
+                try { NetworkServer.SendToClient(session.users[i].connectionId, MTypes.AgentInfo, mObject); }
+                catch { }
             }
         }
 

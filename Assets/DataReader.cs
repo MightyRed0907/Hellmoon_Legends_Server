@@ -52,6 +52,8 @@ public class DataReader
 
             Map m = JsonUtility.FromJson<Map>(get);
 
+            //Debug.LogError(m.buildingData[0].teamBuildings[0].x);
+
             string[] image = Directory.GetFiles(d, "*.png");
             int size = int.Parse (Path.GetFileNameWithoutExtension(image[0]).Split ('@') [1]);
 

@@ -1,9 +1,9 @@
 {
-	"clientLanguageId":55,
+	"clientLanguageid":55,
 	"clientSceneName":"NewMap",
 	"teamsize":2,
     "roundCount":10,
-    "roundTime":120,
+    "roundTime":1000,
     "lobbyTime":8,
 	"experienceModifier":1,
     "maxPlayers":10,
@@ -71,55 +71,127 @@
 			]
 		}
 	],
-	"towerData":
+	"buildingData":
 	[
 		{
-			"spawnPoints":
+			"teamBuildings":
 			[
 				{
-					"x":71,
-					"y":0,
-					"z":17
+					"buildingId": 1,
+					"x": 34,
+					"y": 0,
+					"z": 126,
+					"isNexus": false,
+					"team": 0
 				},
 				{
-					"x":58,
-					"y":0,
-					"z":44
+					"buildingId": 2,
+					"x": 32,
+					"y": 0,
+					"z": 52,
+					"isNexus": false,
+					"team": 0
 				},
 				{
-					"x":32,
-					"y":0,
-					"z":52
+					"buildingId": 3,
+					"x": 88,
+					"y": 0,
+					"z": 66,
+					"isNexus": false,
+					"team": 0
 				},
 				{
-					"x":88,
-					"y":0,
-					"z":66
+					"buildingId": 4,
+					"x": 58,
+					"y": 0,
+					"z": 44,
+					"isNexus": false,
+					"team": 0
+				},
+				{
+					"buildingId": 5,
+					"x": 135,
+					"y": 0,
+					"z": 19,
+					"isNexus": false,
+					"team": 0
+				},
+				{
+					"buildingId": 6,
+					"x": 71,
+					"y": 0,
+					"z": 17,
+					"isNexus": false,
+					"team": 0
+				},
+				{
+					"buildingId": 7,
+					"x": 49,
+					"y": 0,
+					"z": 40,
+					"isNexus": true,
+					"team": 0
 				}
 			]
 		},
 		{
-			"spawnPoints":
+			"teamBuildings":
 			[
 				{
-					"x":109,
-					"y":0,
-					"z":96
+					"buildingId": 1,
+					"x": 63,
+					"y": 0,
+					"z": 146,
+					"isNexus": false,
+					"team": 1					
 				},
 				{
-					"x":129,
-					"y":0,
-					"z":131
+					"buildingId": 2,
+					"x": 121,
+					"y": 0,
+					"z": 151,
+					"isNexus": false,
+					"team": 1
 				},
 				{
-					"x":121,
-					"y":0,
-					"z":151
+					"buildingId": 3,
+					"x": 109,
+					"y": 0,
+					"z": 96,
+					"isNexus": false,
+					"team": 1
 				},
 				{
-					"x":157,
-					"y":0,
-					"z":125
+					"buildingId": 4,
+					"x": 129,
+					"y": 0,
+					"z": 131,
+					"isNexus": false,
+					"team": 1
+				},
+				{
+					"buildingId": 5,
+					"x": 158,
+					"y": 0,
+					"z": 41,
+					"isNexus": false,
+					"team": 1
+				},
+				{
+					"buildingId": 6,
+					"x": 157,
+					"y": 0,
+					"z": 125,
+					"isNexus": false,
+					"team": 1
+				},
+				{
+					"buildingId": 7,
+					"x": 137,
+					"y": 0,
+					"z": 138,
+					"isNexus": true,
+					"team": 1
 				}
 			]
 		}
@@ -128,29 +200,29 @@
 	[
 		{
 			"spawnPoint": { "x":40, "y":0, "z":30},
-			"spawnTime":2,
+			"spawnTime":5,
 			"spawnCount":8,
-			"spawnRange":5,
-			"teamId": 0,
+			"spawnRange":100,
+			"teamid": 0,
 			"spawnObject":
 			[
 				{
 					"clientPrefab":"Blue",
-					"spawnRate":10
+					"spawnRate":100
 				}
 			]
 		},
 		{
 			"spawnPoint": { "x":140, "y":0, "z":130},
-			"spawnTime":2,
+			"spawnTime":5,
 			"spawnCount":8,
-			"spawnRange":5,
-			"teamId": 1,
+			"spawnRange":100,
+			"teamid": 1,
 			"spawnObject":
 			[
 				{
 					"clientPrefab":"Green",
-					"spawnRate":10
+					"spawnRate":100
 				}
 			]
 		}

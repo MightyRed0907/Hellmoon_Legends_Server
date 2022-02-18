@@ -30,7 +30,7 @@ public class AISpawner
     {
         Callipso.Hero creature = ServerManager.creatureHeroes.Find(x => x.clientPrefab == clientPrefab);
         MobileAgent created = ServerManager.current.JoinGame(null, session, creature.alias, clientPrefab);
-        created.team = teamId;
+        //created.team = teamId;
         AIAgent ai = created.gameObject.AddComponent<AIAgent>();
         ai.agent = created;
         ai.vision = creature.vision; // Bots always can see
@@ -39,15 +39,18 @@ public class AISpawner
         return created;
     }
 
-    public static MobileAgent SpawnTower(string clientPrefab, Callipso.GameSession session)
+    public static MobileAgent SpawnBuilding(Map.BuildingInfo building, Callipso.GameSession session)
     {
-        Callipso.Hero tower = ServerManager.towerHeroes.Find(x => x.clientPrefab == clientPrefab);
-        MobileAgent created = ServerManager.current.JoinGame(null, session, tower.alias, clientPrefab, true);
+        Callipso.Hero buildingHero = ServerManager.buildingHeroes.Find(x => x.clientPrefab == building.GetBuildingPrefab());
+        MobileAgent created = ServerManager.current.JoinGame(null, session, buildingHero.alias, building.GetBuildingPrefab(), true, buildingInfo: building);
+        
+        created.team = building.team;
+        created.user = null;
+        
         AIAgent ai = created.gameObject.AddComponent<AIAgent>();
         ai.agent = created;
         //ai.vision = tower.vision; // Bots always can see
         ai.vision = 20;
-        created.user = null;
 
         return created;
     }
